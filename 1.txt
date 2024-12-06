@@ -1,0 +1,30 @@
+@echo off
+setlocal enabledelayedexpansion
+
+:: Caminho para o executável do 7-Zip
+set "7zip=C:\Program Files\7-Zip\7z.exe"
+
+:: Verifica se o 7-Zip está instalado
+if not exist "!7zip!" (
+    echo O 7-Zip não foi encontrado no caminho especificado. Verifique se está instalado e o caminho correto.
+    pause
+    exit /b
+)
+
+:: Diretório atual (onde estão os arquivos .cab)
+set "source_dir=%cd%"
+
+:: Itera pelos arquivos .cab no diretório atual
+for %%f in (*.cab) do (
+    :: Remove a extensão do nome do arquivo
+    set "filename=%%~nf"
+    
+    :: Cria uma pasta com o nome do arquivo (sem extensão)
+    mkdir "!source_dir!\!filename!"
+
+    :: Extrai o conteúdo do arquivo .cab para a pasta criada
+    "!7zip!" x "%%f" -o"!source_dir!\!filename!" -y
+)
+
+echo Todos os arquivos foram descompactados com sucesso.
+pause
