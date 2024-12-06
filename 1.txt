@@ -14,6 +14,9 @@ if not exist "!7zip!" (
 :: Diretório atual (onde estão os arquivos .cab)
 set "source_dir=%cd%"
 
+:: Contador total de ocorrências
+set "total_count=0"
+
 :: Itera pelos arquivos .cab no diretório atual
 for %%f in (*.cab) do (
     :: Remove a extensão do nome do arquivo
@@ -24,7 +27,22 @@ for %%f in (*.cab) do (
 
     :: Extrai o conteúdo do arquivo .cab para a pasta criada
     "!7zip!" x "%%f" -o"!source_dir!\!filename!" -y
+
+    :: Caminho da pasta criada
+    set "folder_path=!source_dir!\!filename!"
+
+    :: Itera pelos arquivos .config na pasta descompactada
+    for /r "!folder_path!" %%c in (*.config) do (
+        :: Conta as ocorrências de "dragao baiano" no arquivo atual
+        find /i "dragao baiano" "%%c" > nul
+        if !errorlevel! equ 0 (
+            for /f "usebackq" %%k in (`find /i "dragao baiano" "%%c" /c`) do (
+                set /a total_count+=%%k
+            )
+        )
+    )
 )
 
-echo Todos os arquivos foram descompactados com sucesso.
+:: Exibe o total de ocorrências
+echo Total de ocorrências de "dragao baiano": !total_count!
 pause
