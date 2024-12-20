@@ -5,7 +5,7 @@ imprimirExtrato() {
   if (printWindow) {
     // Pegando todos os links de CSS do head principal
     const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-      .map(link => <link rel="stylesheet" href="${link.href}">)
+      .map(link => <link rel="stylesheet" href="${(link as HTMLLinkElement).href}">)
       .join('');
       
     printWindow.document.open();
