@@ -1,48 +1,26 @@
-@echo off
-setlocal enabledelayedexpansion
+imprimirExtrato() {
+  const printContent = this.contentToPrint.nativeElement.innerHTML;
+  const printWindow = window.open('', '', 'width=800,height=600');
 
-:: Caminho para o executável do 7-Zip
-set "7zip=C:\Program Files\7-Zip\7z.exe"
-
-:: Verifica se o 7-Zip está instalado
-if not exist "!7zip!" (
-    echo O 7-Zip não foi encontrado no caminho especificado. Verifique se está instalado e o caminho correto.
-    pause
-    exit /b
-)
-
-:: Diretório atual (onde estão os arquivos .cab)
-set "source_dir=%cd%"
-
-:: Contador total de ocorrências
-set "total_count=0"
-
-:: Itera pelos arquivos .cab no diretório atual
-for %%f in (*.cab) do (
-    :: Remove a extensão do nome do arquivo
-    set "filename=%%~nf"
-    
-    :: Cria uma pasta com o nome do arquivo (sem extensão)
-    mkdir "!source_dir!\!filename!"
-
-    :: Extrai o conteúdo do arquivo .cab para a pasta criada
-    "!7zip!" x "%%f" -o"!source_dir!\!filename!" -y
-
-    :: Caminho da pasta criada
-    set "folder_path=!source_dir!\!filename!"
-
-    :: Itera pelos arquivos .config na pasta descompactada
-    for /r "!folder_path!" %%c in (*.config) do (
-        :: Conta as ocorrências de "dragao baiano" no arquivo atual
-        find /i "dragao baiano" "%%c" > nul
-        if !errorlevel! equ 0 (
-            for /f "usebackq" %%k in (`find /i "dragao baiano" "%%c" /c`) do (
-                set /a total_count+=%%k
-            )
-        )
-    )
-)
-
-:: Exibe o total de ocorrências
-echo Total de ocorrências de "dragao baiano": !total_count!
-pause
+  if (printWindow) {
+    // Pegando todos os links de CSS do head principal
+    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+      .map(link => <link rel="stylesheet" href="${link.href}">)
+      .join('');
+      
+    printWindow.document.open();
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Impressão de Extrato</title>
+          ${links}
+        </head>
+        <body>
+          ${printContent}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+}
